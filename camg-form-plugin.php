@@ -5,6 +5,23 @@
 * Description: shortcode [camg-form-plugin]
 */
 
+register_activation_hook(__FILE__, 'camg_form_regis');
+
+function camg_form_regis(){
+    global $wpdb;
+    $tabla = $wpdb->prefix . 'formulario';
+    $charset_collate = $wpdb->get_charset_collate();
+    $query = "CREATE TABLE IF NOT EXISTS $tabla (id mediumint(10) NOT NULL
+              AUTO_INCREMENT,
+              nombre varchar(50) NOT NULL,
+              corre varchar(50) NOT NULL,
+              telefono varchar(12) NOT NULL,
+              UNIQUE (id) ) $charset_collate";
+
+        include_once ABSPATH . "wp-admin/includes/upgrade.php";
+        dbDelta($query);
+}
+
 add_shortcode('camg-form-plugin', 'CAMG_Form_Plugin' );
 
 function CAMG_Form_Plugin(){
