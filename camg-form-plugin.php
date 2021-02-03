@@ -14,8 +14,9 @@ function camg_form_regis(){
     $query = "CREATE TABLE IF NOT EXISTS $tabla (id mediumint(10) NOT NULL
               AUTO_INCREMENT,
               nombre varchar(50) NOT NULL,
-              corre varchar(50) NOT NULL,
+              correo varchar(50) NOT NULL,
               telefono varchar(12) NOT NULL,
+              terminos smallint(4) NOT NULL,
               UNIQUE (id) ) $charset_collate";
 
         include_once ABSPATH . "wp-admin/includes/upgrade.php";
@@ -25,6 +26,22 @@ function camg_form_regis(){
 add_shortcode('camg-form-plugin', 'CAMG_Form_Plugin' );
 
 function CAMG_Form_Plugin(){
+
+    global $wpdb;
+    
+    if (!empty($_POST) 
+        AND $_POST['nombre'] != '' 
+        AND is_email($_POST['correo']) 
+        AND $_POST['telefono'] != ""
+        AND $_POST['terminos'] == 1)
+        {
+        $tabla = $wpdb->prefix . 'formulario';
+        $nombre = sanitize_text_field($_POST['nombre']);
+        $correo = sanitize_email($_POST['correo']);
+        $telefono = sanitize_text_field($_POST['telefono']);
+        $terminos = (int)$_POST['terminos'];
+        $wpdb->insert($tabla, array('nombre' => $nombre, 'correo' => $correo, 'telefono' => $telefono, 'terminos' => $terminos));
+    }
     ob_start();
     ?>
         <form method="POST" class="form" action="<?php get_the_permalink(); ?>">
@@ -34,11 +51,11 @@ function CAMG_Form_Plugin(){
             </div>
             <div class="form-input">
                 <label for="correo">Correo</label>
-                <input type="email" name="email" id ="email" required>
+                <input type="email" name="correo" id ="correo" required>
             </div>
             <div class="form-input">
                 <label for="telefono">Telefono</label>
-                <input type="tel" name="tel" id ="tel" required>
+                <input type="tel" name="telefono" id ="telefono" required>
             </div>
             <div class="form-input">
                 <label for="terminos">El presente Política de Privacidad establece
